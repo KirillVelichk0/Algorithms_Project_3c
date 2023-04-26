@@ -27,7 +27,7 @@ public:
     }
 };
 
-class MinSorter{
+class SelectionSorter{
     public:
         template <class It, class Comparator>
         void sort(It begin, It end, Comparator comparator){

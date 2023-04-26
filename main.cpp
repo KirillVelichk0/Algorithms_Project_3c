@@ -1,9 +1,11 @@
 #include <iostream>
 #include <vector>
 #include "Simple/Simple.hpp"
+#include "Shell/Shell.hpp"
+
 int main(int, char**) {
     std::vector<int> cont = {1, 10, 7, 15, 100, -1};
-    MinSorter sorter;
+    ShellSorter sorter;
     auto comparator = [](auto left, auto right) -> int{
         if( right > left){
             return 1;
