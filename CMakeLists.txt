@@ -17,6 +17,10 @@ target_include_directories(${PROJECT_NAME}_shell INTERFACE ${CMAKE_SOURCE_DIR}/s
 add_library(${PROJECT_NAME}_fast INTERFACE)
 target_include_directories(${PROJECT_NAME}_fast INTERFACE ${CMAKE_SOURCE_DIR}/src/FastSort)
 
+#Сортировка слиянием
+add_library(${PROJECT_NAME}_merge INTERFACE)
+target_include_directories(${PROJECT_NAME}_merge INTERFACE ${CMAKE_SOURCE_DIR}/src/MergeSort)
+
 #Сортировка кучей
 add_library(${PROJECT_NAME}_heap INTERFACE)
 target_include_directories(${PROJECT_NAME}_heap INTERFACE ${CMAKE_SOURCE_DIR}/src/HeapSort)
@@ -27,7 +31,7 @@ target_include_directories(${PROJECT_NAME}_standart INTERFACE ${CMAKE_SOURCE_DIR
 #Исполняемый файл
 add_executable(Algorithms src/main.cpp)
 target_link_libraries(Algorithms PRIVATE ${PROJECT_NAME}_simple ${PROJECT_NAME}_shell ${PROJECT_NAME}_fast)
-target_link_libraries(Algorithms PRIVATE ${PROJECT_NAME}_heap ${PROJECT_NAME}_standart)
+target_link_libraries(Algorithms PRIVATE ${PROJECT_NAME}_heap ${PROJECT_NAME}_standart ${PROJECT_NAME}_merge)
 
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

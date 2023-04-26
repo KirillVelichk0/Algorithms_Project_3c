@@ -93,11 +93,11 @@ public:
     template <class It, class Comparator>
     void sort(It begin, It end, Comparator comparator){
         using ValType = std::decay_t<decltype(*begin)>;
-        auto reverse_comparator = [&comparator](auto leftVal, auto rightVal){
+        auto reverse_comparator = [&comparator](const auto& leftVal, const auto& rightVal){
             return comparator(rightVal, leftVal);
         };
         BinareHeap<ValType, decltype(reverse_comparator)> heap(reverse_comparator);
-        std::for_each(begin, end, [&heap](auto val){
+        std::for_each(begin, end, [&heap](const auto& val){
             heap.Add(val);
         });
         auto curIt = begin;
