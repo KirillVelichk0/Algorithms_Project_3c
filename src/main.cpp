@@ -3,10 +3,11 @@
 #include "Simple/Simple.hpp"
 #include "Shell/Shell.hpp"
 #include "FastSort/FastSort.hpp"
+#include "HeapSort/HeapSort.hpp"
 
 int main(int, char**) {
     std::vector<int> cont = {-11, 1, 10, 7, 15, 100, 10000, -1, 228};
-    FastSorter sorter;
+    HeapSorter sorter;
     auto comparator = [](auto left, auto right) -> int{
         if( right > left){
             return 1;
