@@ -7,15 +7,18 @@ enable_testing()
 
 #Простые сортировки
 add_library(${PROJECT_NAME}_simple INTERFACE)
-target_include_directories(${PROJECT_NAME}_simple INTERFACE ${CMAKE_SOURCE_DIR}/Simple)
+target_include_directories(${PROJECT_NAME}_simple INTERFACE ${CMAKE_SOURCE_DIR}/src/Simple)
 
 #Сортировка Шелла
 add_library(${PROJECT_NAME}_shell INTERFACE)
-target_include_directories(${PROJECT_NAME}_shell INTERFACE ${CMAKE_SOURCE_DIR}/Shell)
+target_include_directories(${PROJECT_NAME}_shell INTERFACE ${CMAKE_SOURCE_DIR}/src/Shell)
 
+#Быстрая сортировка
+add_library(${PROJECT_NAME}_fast INTERFACE)
+target_include_directories(${PROJECT_NAME}_fast INTERFACE ${CMAKE_SOURCE_DIR}/src/FastSort)
 #Исполняемый файл
-add_executable(Algorithms main.cpp)
-target_link_libraries(Algorithms PRIVATE ${PROJECT_NAME}_simple ${PROJECT_NAME}_shell)
+add_executable(Algorithms src/main.cpp)
+target_link_libraries(Algorithms PRIVATE ${PROJECT_NAME}_simple ${PROJECT_NAME}_shell ${PROJECT_NAME}_fast)
 
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
