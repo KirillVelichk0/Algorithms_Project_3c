@@ -20,10 +20,14 @@ target_include_directories(${PROJECT_NAME}_fast INTERFACE ${CMAKE_SOURCE_DIR}/sr
 #Сортировка кучей
 add_library(${PROJECT_NAME}_heap INTERFACE)
 target_include_directories(${PROJECT_NAME}_heap INTERFACE ${CMAKE_SOURCE_DIR}/src/HeapSort)
+
+#Стандартная сортировка
+add_library(${PROJECT_NAME}_standart INTERFACE)
+target_include_directories(${PROJECT_NAME}_standart INTERFACE ${CMAKE_SOURCE_DIR}/src/StandartSort)
 #Исполняемый файл
 add_executable(Algorithms src/main.cpp)
 target_link_libraries(Algorithms PRIVATE ${PROJECT_NAME}_simple ${PROJECT_NAME}_shell ${PROJECT_NAME}_fast)
-target_link_libraries(Algorithms PRIVATE ${PROJECT_NAME}_heap)
+target_link_libraries(Algorithms PRIVATE ${PROJECT_NAME}_heap ${PROJECT_NAME}_standart)
 
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

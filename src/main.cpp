@@ -4,10 +4,10 @@
 #include "Shell/Shell.hpp"
 #include "FastSort/FastSort.hpp"
 #include "HeapSort/HeapSort.hpp"
-
+#include "StandartSort/StandartSort.hpp"
 int main(int, char**) {
     std::vector<int> cont = {-11, 1, 10, 7, 15, 100, 10000, -1, 228};
-    HeapSorter sorter;
+    StandartSorter sorter;
     auto comparator = [](auto left, auto right) -> int{
         if( right > left){
             return 1;
