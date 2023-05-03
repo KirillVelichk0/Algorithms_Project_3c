@@ -31,13 +31,13 @@ private:
                 auto& val = *curIt;
                 unsigned char* bytes_val = (unsigned char*)(&(val.first));
                 unsigned char curRadixByte = bytes_val[curPos];
-                radixes[curRadixByte].push_back(val);
+                radixes[curRadixByte].push_back(std::move(val));
                 curIt = std::next(curIt, 1);
             }
 
             std::for_each(radixes.cbegin(), radixes.cend(), [curIt = begin](const auto& oneRadix) mutable{
                 std::for_each(oneRadix.cbegin(), oneRadix.cend(), [&curIt](const auto& val){
-                    *curIt = val;
+                    *curIt = std::move(val);
                     curIt = std::next(curIt, 1);
                 });
             });
@@ -53,8 +53,8 @@ public:
         {
             auto curIt = begin;
             while(curIt != end){
-                auto val = *curIt;
-                biections.push_back(std::make_pair(mapper(val), val));
+                auto& val = *curIt;
+                biections.push_back(std::make_pair(mapper(val), std::move(val)));
                 curIt = std::next(curIt, 1);
             }
         }
@@ -68,7 +68,7 @@ public:
         }
         auto curIt = begin;
         for(auto& val: biections){
-            *curIt = val.second;
+            *curIt = std::move(val.second);
             curIt = std::next(curIt, 1);
         }
     }
