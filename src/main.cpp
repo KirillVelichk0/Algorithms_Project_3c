@@ -8,8 +8,8 @@
 #include "StandartSort/StandartSort.hpp"
 #include "MergeSort/MergeSort.hpp"
 int main(int, char**) {
-    std::vector<std::int32_t> cont = {-11, 1, 10, 7, 15, 100, 10000, -1, 228, 12340};
-    RadixSorterRecursive sorter;
+    std::vector<std::int32_t> cont = {-11, 1, 10, 7, 15, 100, 10000, -1, 228, 12340, -322};
+    RadixSorter sorter;
     auto comparator = [](auto& left, auto& right) -> int{
         if( right > left){
             return 1;
