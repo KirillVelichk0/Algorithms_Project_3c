@@ -94,7 +94,7 @@ public:
     template <class It, class Comparator>
     void sort(It begin, It end, Comparator comparator){
         using ValType = std::decay_t<decltype(*begin)>;
-        auto reverse_comparator = [&comparator](const auto& leftVal, const auto& rightVal){
+        auto reverse_comparator = [&comparator](auto& leftVal, auto& rightVal){
             return comparator(rightVal, leftVal);
         };
         BinareHeap<ValType, decltype(reverse_comparator)> heap(reverse_comparator);

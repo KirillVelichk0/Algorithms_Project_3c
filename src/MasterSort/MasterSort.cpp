@@ -1,3 +1,3 @@
 #include "MasterSort.hpp"
 
-MasterSorter::MasterSorter() : sorter(StandartSorter()){}
+//MasterSorter::MasterSorter() : sorter(StandartSorter()){}

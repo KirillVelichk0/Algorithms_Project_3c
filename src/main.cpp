@@ -44,7 +44,7 @@ private:
         {
             return;
         }
-        auto middlePos = this->partitioner.getPartition(begin, end, comparator);
+        auto middlePos = this->getPartition(begin, end, comparator);
         this->rec_sort(begin, middlePos, comparator, curPrice);
         this->rec_sort(middlePos, end, comparator, curPrice);
     }
@@ -57,10 +57,10 @@ public:
 };
 
 int main(int, char**) {
-    std::vector<std::int32_t> cont = {-100, 13, 1, 10000, -23412, 1234, 312, 3123, 13, 1, 1, -322, 228, 15, 2, 3, 10, -19, 22, 1000};
-    FastSorter sorter;
+    std::vector<std::string> cont = {"asfdf", "afdsas", "asdf"};
+    MasterSorter sorter = BubbleSorter();
     // 3 2 1 
-    auto comparator = [](std::int32_t left, std::int32_t right) -> std::int32_t{
+    auto comparator = [](std::string& left, std::string& right) -> std::int32_t{
         if (right > left){
             return 1;
         }

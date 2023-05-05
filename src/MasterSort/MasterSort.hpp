@@ -7,18 +7,11 @@
 #include "Simple.hpp"
 #include <variant>
 
-using MasterSorterImplType = std::variant<FastSorter, FastSorterRecurs, HeapSorter, MergeSorter, MergeSorterRecursive,
-    ShellSorter, StandartSorter, BubbleSorter, SelectionSorter, InsertSorter>;
+using MasterSorterImplType = std::variant<FastSorter, FastSorterRecurs, HeapSorter,
+StandartSorter, ShellSorter, MergeSorterRecursive, MergeSorter, BubbleSorter, SelectionSorter,
+InsertSorter>;
 
-//задаем концепты
-namespace{
-    template <class SomeSorter>
-    concept SorterVariantType =
-    requires(SomeSorter sorter, MasterSorterImplType impl){
-        impl = sorter;
-        true;
-    };
-}
+
 
 
 
@@ -30,18 +23,20 @@ private:
 public:
     MasterSorter();
     ~MasterSorter() = default;
-    template <SorterVariantType Sorter>
+    template <class Sorter>
     MasterSorter (Sorter&& sorter) : sorter(std::forward<Sorter>(sorter)){}
-    template <SorterVariantType Sorter>
+    template <class Sorter>
     MasterSorter& operator=(Sorter&& sorter){
         this->sorter = std::forward<Sorter>(sorter);
         return *this;
     }
     template <class It, class Comparator>
     void sort(It begin, It end, Comparator comparator){
-        auto visitor = [&begin, &end, &comparator](auto& sorter){
+        auto visitor = [begin, end, comparator](auto&& sorter){
             sorter.sort(begin, end, comparator);
         };
-        std::visit(std::move(visitor), this->sorter);
+        auto copy = this->sorter;
+        std::visit(visitor, copy);
+
     }
 };

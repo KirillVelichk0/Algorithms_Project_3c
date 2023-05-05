@@ -1,0 +1,6 @@
+\babel@toc {russian}{}\relax 
+\contentsline {section}{\numberline {0.1}Введение}{1}{section.0.1}%
+\contentsline {section}{\numberline {0.2}Методика проведения эксперемента}{1}{section.0.2}%
+\contentsline {section}{\numberline {0.3}Ход работы}{1}{section.0.3}%
+\contentsline {section}{\numberline {0.4}Заключение}{2}{section.0.4}%
+\contentsline {section}{\numberline {0.5}Приложение 1. Программный код}{3}{section.0.5}%

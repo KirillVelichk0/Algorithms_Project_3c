@@ -24,9 +24,9 @@ public:
             //iterating for groups
             for (std::int32_t i = 0; i < curStep; i++, curGroupBegin = std::next(curGroupBegin, 1))
             {
-                
+                auto curPos = i;
                 //iterating for group
-                for (auto curIt = curGroupBegin, curPos = i; curPos < sz; [&curPos, &curIt, curStep, sz]()
+                for (auto curIt = curGroupBegin; curPos < sz; [&curPos, &curIt, curStep, sz]()
                 {
                     curPos+= curStep;
                     if(curPos < sz){
