@@ -24,7 +24,15 @@ public:
     MasterSorter();
     ~MasterSorter() = default;
     template <class Sorter>
-    MasterSorter (Sorter&& sorter) : sorter(std::forward<Sorter>(sorter)){}
+    MasterSorter(Sorter&& impl){
+        if constexpr (std::is_same_v<MasterSorter, std::decay_t<decltype(impl)>>){
+            this->sorter = impl.sorter;
+        }
+        else{
+            this->sorter = impl;
+        }
+        
+    }
     template <class Sorter>
     MasterSorter& operator=(Sorter&& sorter){
         this->sorter = std::forward<Sorter>(sorter);
