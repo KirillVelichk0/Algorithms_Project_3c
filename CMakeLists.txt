@@ -40,11 +40,20 @@ target_link_libraries(${PROJECT_NAME}_master PUBLIC ${PROJECT_NAME}_simple ${PRO
 target_link_libraries(${PROJECT_NAME}_master PUBLIC ${PROJECT_NAME}_heap ${PROJECT_NAME}_standart ${PROJECT_NAME}_merge)
 target_link_libraries(${PROJECT_NAME}_master PUBLIC ${PROJECT_NAME}_radix)
 
+#Мапперы
+add_library(${PROJECT_NAME}_mappers INTERFACE)
+target_include_directories(${PROJECT_NAME}_mappers INTERFACE ${CMAKE_SOURCE_DIR}/src/Mappers)
+
+#Генератор
+add_library(${PROJECT_NAME}_gen INTERFACE)
+target_include_directories(${PROJECT_NAME}_gen INTERFACE ${CMAKE_SOURCE_DIR}/src/Gen)
+
 #Исполняемый файл
 add_executable(Algorithms src/main.cpp)
 target_link_libraries(Algorithms PRIVATE ${PROJECT_NAME}_simple ${PROJECT_NAME}_shell ${PROJECT_NAME}_fast)
 target_link_libraries(Algorithms PRIVATE ${PROJECT_NAME}_heap ${PROJECT_NAME}_standart ${PROJECT_NAME}_merge)
 target_link_libraries(Algorithms PRIVATE ${PROJECT_NAME}_radix ${PROJECT_NAME}_master)
+target_link_libraries(Algorithms PRIVATE ${PROJECT_NAME}_mappers ${PROJECT_NAME}_gen)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
