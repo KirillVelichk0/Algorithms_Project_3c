@@ -5,27 +5,26 @@
 #include <stack>
 
 class RandomPartitioner{
-private:
-    std::mt19937 randomizer;
 public:
-    RandomPartitioner() : randomizer([]() {std::random_device rnd; return rnd(); }()) {}
     template <class It, class Comparator>
     auto getPartition(It begin, It end, Comparator comparator)
     {
-        std::int32_t sz = std::distance(begin, end);
-        std::uniform_int_distribution<std::int32_t> distr(0, sz - 1);
-        auto compIndex = distr(this->randomizer);
-        auto middlePos = begin;
-        auto compVal = *std::next(begin, compIndex);
-        std::for_each(begin, end, [compVal, &middlePos, &comparator](auto &curVal)
-                      {
-                          if (comparator(compVal, curVal) == -1)
-                          {
-                              std::swap(*middlePos, curVal);
-                              middlePos = std::next(middlePos);
-                          }
-                      });
-        return middlePos;
+        auto pivot = *begin;
+        auto upIt = begin;
+        auto downIt = std::next(end, -1);
+        while(true){
+            while(upIt != end && comparator(*upIt, pivot) == 1){
+                upIt++;
+            }
+            while(comparator(*downIt, pivot) == -1){
+                downIt--;
+            }
+            if(std::distance(upIt, downIt) <= 0){
+                return std::next(downIt, 1);
+            }
+            std::swap(*upIt, *downIt);
+            upIt++; downIt--;
+        }
     }
 };
 class FastSorterRecurs
@@ -37,7 +36,8 @@ public:
     template <class It, class Comparator>
     void sort(It begin, It end, Comparator comparator)
     {
-        if (begin == end || std::next(begin, 1) == end)
+        auto size = std::distance(begin, end);
+        if (size < 2)
         {
             return;
         }
@@ -62,7 +62,8 @@ public:
         while(!tasksCont.empty()){
             auto [curBegin, curEnd] = tasksCont.top();
             tasksCont.pop();
-            if (curBegin == curEnd || std::next(curBegin, 1) == curEnd)
+            auto size = std::distance(curBegin, curEnd);
+            if (size < 2)
             {
                 continue;
             }

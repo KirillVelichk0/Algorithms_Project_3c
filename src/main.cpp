@@ -9,10 +9,9 @@
 #include "MergeSort/MergeSort.hpp"
 #include "MasterSort/MasterSort.hpp"
 int main(int, char**) {
-    std::vector<std::int32_t> cont = {-11, 1, 10, 7, 15, 100, 10000, -1, 228, 12340, -322};
-    MasterSorter sorter;
-    sorter = StandartSorter();
-    sorter = FastSorter();
+    std::vector<std::int32_t> cont = {-100, 13, 1, 10000, -23412, 1234, 312, 3123, 13, 1, 1, -322, 228, 15, 2, 3, 10, -19, 22, 1000};
+    FastSorter sorter;
+    // 3 2 1 
     auto comparator = [](std::int32_t left, std::int32_t right) -> std::int32_t{
         if (right > left){
             return 1;
