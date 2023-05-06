@@ -62,6 +62,101 @@ void Compare(std::vector<MasterSorter> &sortings, std::vector<Data> &data,
   it_file++;
   file.close();
 }
+
+
+template <class Data> void Save(std::vector<Data> data, std::string path) {
+  /*Сохранение данных в файл*/
+  std::ofstream file(path);
+  std::ostream_iterator<Data> it_file(file, "\n");
+  std::copy(data.begin(), data.end(), it_file);
+  file.close();
+}
+template <class Time>
+void CompareRadixDigit(std::vector<std::vector<digit>> data, std::string path) {
+  std::ofstream file(path, std::ios::app);
+  std::ostream_iterator<std::string> it_file(file, "\n");
+  std::string result = "";
+  for (auto it = data.begin(); it != data.end(); ++it) {
+    auto data_copy = *it;
+    RadixSorter sorter;
+    auto mapper = GetDigitMapper();
+    auto start = std::chrono::high_resolution_clock::now();
+    sorter.sort(data_copy.begin(), data_copy.end(), mapper);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<Time>(end - start);
+    result += std::to_string(duration.count());
+    result += " ";
+  }
+  *it_file = result;
+  it_file++;
+  file.close();
+}
+template <class Time>
+
+void CompareRadixInt(std::vector<std::vector<int>> data, std::string path) {
+  std::ofstream file(path, std::ios::app);
+  file.seekp(0, std::ios::beg);
+  std::ostream_iterator<std::string> it_file(file, "\n");
+  std::string result = "";
+  for (auto it = data.begin(); it != data.end(); ++it) {
+    auto data_copy = *it;
+    RadixSorter sorter;
+    auto mapper = GetIntMapper();
+    auto start = std::chrono::high_resolution_clock::now();
+    sorter.sort(data_copy.begin(), data_copy.end(), mapper);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<Time>(end - start);
+    result += std::to_string(duration.count());
+    result += " ";
+  }
+  *it_file = result;
+  it_file++;
+  file.close();
+}
+template <class Time>
+
+void CompareRadixString(std::vector<std::vector<std::string>> data,
+                        std::string path) {
+  std::ofstream file(path, std::ios::app);
+  std::ostream_iterator<std::string> it_file(file, "\n");
+  std::string result = "";
+  for (auto it = data.begin(); it != data.end(); ++it) {
+    auto data_copy = *it;
+    RadixSorter sorter;
+    auto mapper = GetStringMapper();
+    auto start = std::chrono::high_resolution_clock::now();
+    sorter.sort(data_copy.begin(), data_copy.end(), mapper);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<Time>(end - start);
+    result += std::to_string(duration.count());
+    result += " ";
+  }
+  *it_file = result;
+  it_file++;
+  file.close();
+}
+template <class Time>
+
+void CompareRadixData(std::vector<std::vector<Date>> data, std::string path) {
+  std::ofstream file(path, std::ios::app);
+  std::ostream_iterator<std::string> it_file(file, "\n");
+  std::string result = "";
+  for (auto it = data.begin(); it != data.end(); ++it) {
+    auto data_copy = *it;
+    RadixSorter sorter;
+    auto mapper = GetDateMapper();
+    auto start = std::chrono::high_resolution_clock::now();
+    sorter.sort(data_copy.begin(), data_copy.end(), mapper);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<Time>(end - start);
+    result += std::to_string(duration.count());
+    result += " ";
+  }
+  *it_file = result;
+  it_file++;
+  file.close();
+}
+
 template <class Time = nanosec, class Data>
 void Compare(MasterSorter sorter, const std::vector<std::vector<Data>> data,
              const std::string &path) {
@@ -135,7 +230,7 @@ public:
   }
 };
 
-/*auto GetSortersVector(){
+auto GetSortersVector(){
   std::vector<MasterSorter> masters;
   masters.push_back(BubbleSorter());
   masters.push_back(InsertSorter());
@@ -148,7 +243,30 @@ public:
   masters.push_back(FastSorterRecurs());
   masters.push_back(StandartSorter());
   return masters;
-}*/
+}
+auto GetCoolSorters(){
+  std::vector<MasterSorter> masters;
+  masters.push_back(HeapSorter());
+  masters.push_back(MergeSorter());
+  masters.push_back(MergeSorterRecursive());
+  masters.push_back(FastSorter());
+  masters.push_back(FastSorterRecurs());
+  masters.push_back(StandartSorter());
+  return masters;
+}
+
+auto CompareSmallString(){
+
+  auto data = Gen<std::string, Distribution::PartialMixing>()(5000, 10, 1000, 100, 2000);
+  auto masters = GetSortersVector();
+  Compare<microsec>(masters, data, "../data/small_str.csv");
+}
+
+auto CompareBigString(){
+  auto masters = GetCoolSorters();
+  auto data = Gen<std::string, Distribution::PartialMixing>()(50000, 20, 10000, 1000, 20000);
+  Compare<microsec>(masters, data, "../data/big_str.csv");
+}
 
 
 
@@ -352,6 +470,27 @@ void GenFastRDigitData(){
   Compare<microsec>(master, data, "../data/digit_fast_rec.csv");
 }
 
+void GenFastRInt(){
+  MasterSorter master = FastSorterRecurs();
+  std::vector<std::vector<int>> data;
+  for(int i = 0; i < 10; i++){
+    data.push_back(Gen<int, Distribution::Normal>()(5000, 100, 1000));
+  }
+
+  Compare<microsec>(master, data, "../data/int_fastR_rec.csv");
+  data.clear();
+  for(int i = 0; i < 10; i++){
+    data.push_back(Gen<int, Distribution::Normal>()(50000, 100, 1000));
+  }
+
+  Compare<microsec>(master, data, "../data/int_fastR_rec.csv");
+  data.clear();
+  for(int i = 0; i < 10; i++){
+    data.push_back(Gen<int, Distribution::Normal>()(500000, 100, 1000));
+  }
+  Compare<microsec>(master, data, "../data/int_fastR_rec.csv");
+}
+
 void GenFastDigitData(){
   MasterSorter master = FastSorter();
   std::vector<std::vector<digit>> data;
@@ -389,10 +528,44 @@ void GenFastDigitData(){
   Compare<microsec>(master, data, "../data/digit_fast.csv");
 }
 
+void GenRadixDate(){
+  std::vector<std::vector<Date>> data;
+  for(int i = 0; i < 10; i++){
+    data.push_back(Gen<Date, Distribution::PartiallyOrdered>()(500000, 30, 100, 30,3, 10));
+  }
+  CompareRadixData<microsec>(data, "../data/radix_date.csv");
+}
+
+void GenRadixInt(){
+  std::vector<std::vector<int>> data;
+  for(int i = 0; i < 10; i++){
+    data.push_back(Gen<int, Distribution::Normal>()(5000, 100, 1000));
+  }
+
+  CompareRadixInt<microsec>(data, "../data/radix_int.csv");
+  data.clear();
+  for(int i = 0; i < 10; i++){
+    data.push_back(Gen<int, Distribution::Normal>()(50000, 100, 1000));
+  }
+
+  CompareRadixInt<microsec>(data, "../data/radix_int.csv");
+  data.clear();
+  for(int i = 0; i < 10; i++){
+    data.push_back(Gen<int, Distribution::Normal>()(500000, 100, 1000));
+  }
+
+  CompareRadixInt<microsec>(data, "../data/radix_int.csv");
+}
+
 int main(int, char **) {
   GenMergeDigitData();
   GenMergeRDigitData();
   GenFastDigitData();
   GenFastRDigitData();
   GenHeapDigitData();
+  CompareSmallString();
+  CompareBigString();
+  GenRadixInt();
+  GenRadixDate();
+  GenFastRInt();
 }
