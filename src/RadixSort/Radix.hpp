@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <vector>
+#include <cstring>
 bool IsBigEndian(){
     constexpr std::int32_t a = 0xA1B2C3D4;
     unsigned char *p = (unsigned char*)&a;
@@ -30,18 +31,17 @@ private:
             auto curIt = begin;
             while(curIt != end){
                 auto& val = *curIt;
-                unsigned char* bytes_val = (unsigned char*)(&(val.first));
-                unsigned char curRadixByte = bytes_val[curPos];
+                unsigned char curRadixByte = ((unsigned char*)(&(val.first)))[curPos];
                 radixes[curRadixByte].push_back(std::move(val));
                 curIt = std::next(curIt, 1);
             }
-
-            std::for_each(radixes.cbegin(), radixes.cend(), [curIt = begin](const auto& oneRadix) mutable{
-                std::for_each(oneRadix.cbegin(), oneRadix.cend(), [&curIt](const auto& val){
-                    *curIt = std::move(val);
-                    curIt = std::next(curIt, 1);
-                });
-            });
+            curIt = begin;
+            for(auto iIt = radixes.cbegin(); iIt != radixes.cend(); iIt++){
+                for(auto oneRadix = (*iIt).cbegin(); oneRadix !=(*iIt).cend(); oneRadix++){
+                    *curIt = std::move(*oneRadix);
+                     curIt = std::next(curIt, 1);
+                }
+            }
             this->rec_sort<BiecIt, isBigEndian>(begin, end, curRadix + 1);
         }
     }
@@ -123,6 +123,37 @@ public:
         for(auto& val: biections){
             *curIt = std::move(val.second);
             curIt = std::next(curIt, 1);
+        }
+    }
+};
+
+class RadixSortAnother{
+public:
+    void sort(std::vector<unsigned int>& data){
+        bool isBigEndian = IsBigEndian();
+        int limRadix = 4;
+        for(int curRadix = 0; curRadix < limRadix; curRadix++){
+            std::int16_t curPos;
+            if (isBigEndian){
+                curPos = limRadix - 1 - curRadix;
+            }
+            else{
+                curPos = curRadix;
+            }
+            std::vector<std::vector<unsigned int>> cont(256);
+            for(int i = 0; i < data.size(); i++){
+                unsigned char pos = ((unsigned char*)&(data[i]))[curPos];
+                cont[pos].push_back(data[i]);
+            }
+            unsigned char* cData = (unsigned char*)data.data();
+            int curDataPos = 0;
+            for(int i = 0; i < 256; i++){
+                auto len = cont[i].size() * 4;
+                if(len > 0){
+                    std::memcpy((void*)&(cData[curDataPos]), cont[i].data(), cont[i].size() * 4);
+                }
+                curDataPos += cont[i].size() * 4;
+            }
         }
     }
 };

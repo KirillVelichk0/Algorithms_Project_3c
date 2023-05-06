@@ -71,6 +71,31 @@ template <class Data> void Save(std::vector<Data> data, std::string path) {
   std::copy(data.begin(), data.end(), it_file);
   file.close();
 }
+
+
+template <class Time>
+
+void CompareAnotherRadixUInt(std::vector<std::vector<unsigned int>>& data, std::string path) {
+  std::ofstream file(path, std::ios::app);
+  file.seekp(0, std::ios::beg);
+  std::ostream_iterator<std::string> it_file(file, "\n");
+  std::string result = "";
+  for (auto it = data.begin(); it != data.end(); ++it) {
+    auto data_copy = *it;
+    RadixSortAnother sorter;
+    auto start = std::chrono::high_resolution_clock::now();
+    sorter.sort(*it);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<Time>(end - start);
+    result += std::to_string(duration.count());
+    result += " ";
+  }
+  *it_file = result;
+  it_file++;
+  file.close();
+}
+
+
 template <class Time>
 void CompareRadixDigit(std::vector<std::vector<digit>> data, std::string path) {
   std::ofstream file(path, std::ios::app);
@@ -78,7 +103,7 @@ void CompareRadixDigit(std::vector<std::vector<digit>> data, std::string path) {
   std::string result = "";
   for (auto it = data.begin(); it != data.end(); ++it) {
     auto data_copy = *it;
-    RadixSorter sorter;
+    RadixSorterRecursive sorter;
     auto mapper = GetDigitMapper();
     auto start = std::chrono::high_resolution_clock::now();
     sorter.sort(data_copy.begin(), data_copy.end(), mapper);
@@ -100,7 +125,7 @@ void CompareRadixInt(std::vector<std::vector<int>> data, std::string path) {
   std::string result = "";
   for (auto it = data.begin(); it != data.end(); ++it) {
     auto data_copy = *it;
-    RadixSorter sorter;
+    RadixSorterRecursive sorter;
     auto mapper = GetIntMapper();
     auto start = std::chrono::high_resolution_clock::now();
     sorter.sort(data_copy.begin(), data_copy.end(), mapper);
@@ -122,7 +147,7 @@ void CompareRadixString(std::vector<std::vector<std::string>> data,
   std::string result = "";
   for (auto it = data.begin(); it != data.end(); ++it) {
     auto data_copy = *it;
-    RadixSorter sorter;
+    RadixSorterRecursive sorter;
     auto mapper = GetStringMapper();
     auto start = std::chrono::high_resolution_clock::now();
     sorter.sort(data_copy.begin(), data_copy.end(), mapper);
@@ -143,7 +168,7 @@ void CompareRadixData(std::vector<std::vector<Date>> data, std::string path) {
   std::string result = "";
   for (auto it = data.begin(); it != data.end(); ++it) {
     auto data_copy = *it;
-    RadixSorter sorter;
+    RadixSorterRecursive sorter;
     auto mapper = GetDateMapper();
     auto start = std::chrono::high_resolution_clock::now();
     sorter.sort(data_copy.begin(), data_copy.end(), mapper);
@@ -156,6 +181,8 @@ void CompareRadixData(std::vector<std::vector<Date>> data, std::string path) {
   it_file++;
   file.close();
 }
+
+
 
 template <class Time = nanosec, class Data>
 void Compare(MasterSorter sorter, const std::vector<std::vector<Data>> data,
@@ -536,6 +563,20 @@ void GenRadixDate(){
   CompareRadixData<microsec>(data, "../data/radix_date.csv");
 }
 
+void GenAnotherRadixInt(){
+  std::vector<std::vector<int>> data;
+  for(int i = 0; i < 10; i++){
+    data.push_back(Gen<int, Distribution::Normal>()(500000, 100, 1000));
+  }
+  std::vector<std::vector<unsigned int>> custed_int(10);
+  for(int i = 0; i < 10; i++){
+    for(int j = 0; j < data[i].size(); j++){
+      custed_int[i].push_back(*reinterpret_cast<unsigned int*>(&data[i][j]));
+    }
+  }
+  CompareAnotherRadixUInt<microsec>(custed_int, std::string("../data/another.csv"));
+}
+
 void GenRadixInt(){
   std::vector<std::vector<int>> data;
   for(int i = 0; i < 10; i++){
@@ -568,4 +609,6 @@ int main(int, char **) {
   GenRadixInt();
   GenRadixDate();
   GenFastRInt();
+  GenAnotherRadixInt();
+  
 }
