@@ -208,8 +208,6 @@ void Compare(MasterSorter sorter, const std::vector<std::vector<Data>> data,
   file.close();
 }
 
-
-
 class HybrydSorter {
 private:
   template <class It, class Comparator>
@@ -232,7 +230,7 @@ private:
       downIt--;
     }
   }
-  template <class It, class Comparator>
+    template <class It, class Comparator>
   void rec_sort(It begin, It end, Comparator comparator,
                 std::int16_t curPrice) {
     if (curPrice-- == 0) {
@@ -256,6 +254,31 @@ public:
     this->rec_sort(begin, end, comparator, int(std::log2(size)) * 2);
   }
 };
+
+template <class Time = nanosec, class Data>
+void CompareHybryd(HybrydSorter sorter, const std::vector<std::vector<Data>>& data,
+             const std::string &path) {
+  /*Записывает в текстовый файл время сортировки каждого вектора данных через
+   * пробел*/
+  std::ofstream file(path, std::ios::app);
+  std::ostream_iterator<std::string> it_file(file, "\n");
+  std::string result = "";
+  Comparator comparator;
+  for (auto it = data.begin(); it != data.end(); ++it) {
+    auto data_copy = *it;
+    auto start = std::chrono::high_resolution_clock::now();
+    sorter.sort(data_copy.begin(), data_copy.end(), comparator);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<Time>(end - start);
+    result += std::to_string(duration.count());
+    result += " ";
+  }
+
+  *it_file = result;
+  it_file++;
+  file.close();
+}
+
 
 auto GetSortersVector(){
   std::vector<MasterSorter> masters;
@@ -563,6 +586,20 @@ void GenRadixDate(){
   CompareRadixData<microsec>(data, "../data/radix_date.csv");
 }
 
+void GenHybryd(){
+  std::vector<std::vector<int>> data;
+  for(int i = 0; i < 10; i++){
+    data.push_back(Gen<int, Distribution::Normal>()(500000, 100, 1000));
+  }
+  auto sorter = HybrydSorter{};
+  CompareHybryd<microsec>(sorter, data, "../data/int_hybryd.csv");
+  std::vector<std::vector<std::string>> str_data;
+  for(int i = 0; i < 10; i++){
+    str_data.push_back(Gen<std::string, Distribution::PartiallyOrdered>()(50000, 10, 1000, 10, 20010));
+  }
+  CompareHybryd<microsec>(sorter, str_data, "../data/str_hybryd.csv");
+}
+
 void GenAnotherRadixInt(){
   std::vector<std::vector<int>> data;
   for(int i = 0; i < 10; i++){
@@ -610,5 +647,5 @@ int main(int, char **) {
   GenRadixDate();
   GenFastRInt();
   GenAnotherRadixInt();
-  
+  GenHybryd();
 }
