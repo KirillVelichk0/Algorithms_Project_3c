@@ -29,7 +29,7 @@ struct Comparator {
     }
   }
 
-  std::int32_t operator()(digit left, digit right){
+  std::int32_t operator()(digit left, digit right) {
     if (right > left) {
       return 1;
     } else if (right < left) {
@@ -63,7 +63,6 @@ void Compare(std::vector<MasterSorter> &sortings, std::vector<Data> &data,
   file.close();
 }
 
-
 template <class Data> void Save(std::vector<Data> data, std::string path) {
   /*Сохранение данных в файл*/
   std::ofstream file(path);
@@ -72,10 +71,9 @@ template <class Data> void Save(std::vector<Data> data, std::string path) {
   file.close();
 }
 
-
 template <class Time>
 
-void CompareAnotherRadixUInt(std::vector<std::vector<unsigned int>>& data, std::string path) {
+void CompareAnotherRadixInt(std::vector<std::vector<unsigned int>> data, std::string path) {
   std::ofstream file(path, std::ios::app);
   file.seekp(0, std::ios::beg);
   std::ostream_iterator<std::string> it_file(file, "\n");
@@ -84,7 +82,7 @@ void CompareAnotherRadixUInt(std::vector<std::vector<unsigned int>>& data, std::
     auto data_copy = *it;
     RadixSortAnother sorter;
     auto start = std::chrono::high_resolution_clock::now();
-    sorter.sort(*it);
+    sorter.sort(data_copy);
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<Time>(end - start);
     result += std::to_string(duration.count());
@@ -95,7 +93,6 @@ void CompareAnotherRadixUInt(std::vector<std::vector<unsigned int>>& data, std::
   file.close();
 }
 
-
 template <class Time>
 void CompareRadixDigit(std::vector<std::vector<digit>> data, std::string path) {
   std::ofstream file(path, std::ios::app);
@@ -103,7 +100,7 @@ void CompareRadixDigit(std::vector<std::vector<digit>> data, std::string path) {
   std::string result = "";
   for (auto it = data.begin(); it != data.end(); ++it) {
     auto data_copy = *it;
-    RadixSorterRecursive sorter;
+    RadixSorter sorter;
     auto mapper = GetDigitMapper();
     auto start = std::chrono::high_resolution_clock::now();
     sorter.sort(data_copy.begin(), data_copy.end(), mapper);
@@ -125,7 +122,7 @@ void CompareRadixInt(std::vector<std::vector<int>> data, std::string path) {
   std::string result = "";
   for (auto it = data.begin(); it != data.end(); ++it) {
     auto data_copy = *it;
-    RadixSorterRecursive sorter;
+    RadixSorter sorter;
     auto mapper = GetIntMapper();
     auto start = std::chrono::high_resolution_clock::now();
     sorter.sort(data_copy.begin(), data_copy.end(), mapper);
@@ -147,7 +144,7 @@ void CompareRadixString(std::vector<std::vector<std::string>> data,
   std::string result = "";
   for (auto it = data.begin(); it != data.end(); ++it) {
     auto data_copy = *it;
-    RadixSorterRecursive sorter;
+    RadixSorter sorter;
     auto mapper = GetStringMapper();
     auto start = std::chrono::high_resolution_clock::now();
     sorter.sort(data_copy.begin(), data_copy.end(), mapper);
@@ -168,7 +165,7 @@ void CompareRadixData(std::vector<std::vector<Date>> data, std::string path) {
   std::string result = "";
   for (auto it = data.begin(); it != data.end(); ++it) {
     auto data_copy = *it;
-    RadixSorterRecursive sorter;
+    RadixSorter sorter;
     auto mapper = GetDateMapper();
     auto start = std::chrono::high_resolution_clock::now();
     sorter.sort(data_copy.begin(), data_copy.end(), mapper);
@@ -181,8 +178,6 @@ void CompareRadixData(std::vector<std::vector<Date>> data, std::string path) {
   it_file++;
   file.close();
 }
-
-
 
 template <class Time = nanosec, class Data>
 void Compare(MasterSorter sorter, const std::vector<std::vector<Data>> data,
@@ -207,7 +202,6 @@ void Compare(MasterSorter sorter, const std::vector<std::vector<Data>> data,
   it_file++;
   file.close();
 }
-
 class HybrydSorter {
 private:
   template <class It, class Comparator>
@@ -230,7 +224,7 @@ private:
       downIt--;
     }
   }
-    template <class It, class Comparator>
+  template <class It, class Comparator>
   void rec_sort(It begin, It end, Comparator comparator,
                 std::int16_t curPrice) {
     if (curPrice-- == 0) {
@@ -256,8 +250,9 @@ public:
 };
 
 template <class Time = nanosec, class Data>
-void CompareHybryd(HybrydSorter sorter, const std::vector<std::vector<Data>>& data,
-             const std::string &path) {
+void CompareHybryd(HybrydSorter sorter,
+                   const std::vector<std::vector<Data>> &data,
+                   const std::string &path) {
   /*Записывает в текстовый файл время сортировки каждого вектора данных через
    * пробел*/
   std::ofstream file(path, std::ios::app);
@@ -279,8 +274,7 @@ void CompareHybryd(HybrydSorter sorter, const std::vector<std::vector<Data>>& da
   file.close();
 }
 
-
-auto GetSortersVector(){
+auto GetSortersVector() {
   std::vector<MasterSorter> masters;
   masters.push_back(BubbleSorter());
   masters.push_back(InsertSorter());
@@ -294,7 +288,7 @@ auto GetSortersVector(){
   masters.push_back(StandartSorter());
   return masters;
 }
-auto GetCoolSorters(){
+auto GetCoolSorters() {
   std::vector<MasterSorter> masters;
   masters.push_back(HeapSorter());
   masters.push_back(MergeSorter());
@@ -305,334 +299,199 @@ auto GetCoolSorters(){
   return masters;
 }
 
-auto CompareSmallString(){
+auto CompareSmallString() {
 
-  auto data = Gen<std::string, Distribution::PartialMixing>()(5000, 10, 1000, 100, 2000);
+  auto data = Gen<std::string, Distribution::PartialMixing>()(5000, 10, 1000,
+                                                              100, 2000);
   auto masters = GetSortersVector();
   Compare<microsec>(masters, data, "../data/small_str.csv");
 }
 
-auto CompareBigString(){
+auto CompareBigString() {
   auto masters = GetCoolSorters();
-  auto data = Gen<std::string, Distribution::PartialMixing>()(50000, 20, 10000, 1000, 20000);
+  auto data = Gen<std::string, Distribution::PartialMixing>()(50000, 20, 10000,
+                                                              1000, 20000);
   Compare<microsec>(masters, data, "../data/big_str.csv");
 }
 
-
-
-void GenBubbleDigitData(){
+void GenBubbleDigitData() {
   MasterSorter master{BubbleSorter{}};
   std::vector<std::vector<digit>> data;
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
-  }
+  data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
+  data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
   Compare<microsec>(master, data, "../data/digit_bubble.csv");
 }
 
-void GenInsertDigitData(){
-  MasterSorter master = InsertSorter() ;
+void GenInsertDigitData() {
+  MasterSorter master = InsertSorter();
   std::vector<std::vector<digit>> data;
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
-  }
+  data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
+  data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
   Compare<microsec>(master, data, "../data/digit_inserter.csv");
 }
-void GenSelectDigitData(){
+void GenSelectDigitData() {
   MasterSorter master = SelectionSorter();
   std::vector<std::vector<digit>> data;
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
-  }
+  data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
+  data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
   Compare<microsec>(master, data, "../data/digit_selection.csv");
 }
 
-void GenHeapDigitData(){
+void GenHeapDigitData() {
   MasterSorter master = HeapSorter();
   MasterSorterImplType impl = HeapSorter();
   std::vector<std::vector<digit>> data;
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(5000, 10, 100));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(50000, 10, 1000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
-    
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(5000, 2000, 1, 3000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50000, 15000, 1, 30000));
-  }
+  data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
+  data.push_back(Gen<digit, Distribution::Uniform>()(5000, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(50000, 10, 1000));
+  data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(5000, 2000, 1, 3000));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(50000, 15000, 1, 30000));
   Compare<microsec>(master, data, "../data/digit_heap.csv");
 }
-void GenMergeDigitData(){
+void GenMergeDigitData() {
   MasterSorter master = MergeSorter();
   std::vector<std::vector<digit>> data;
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(5000, 10, 100));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(50000, 10, 1000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
-    
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(5000, 2000, 1, 3000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50000, 15000, 1, 30000));
-  }
+  data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
+  data.push_back(Gen<digit, Distribution::Uniform>()(5000, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(50000, 10, 1000));
+  data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(5000, 1500, 1, 3000));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(50000, 15000, 1, 30000));
   Compare<microsec>(master, data, "../data/digit_merge.csv");
 }
-void GenMergeRDigitData(){
+void GenMergeRDigitData() {
   MasterSorter master = MergeSorterRecursive();
   std::vector<std::vector<digit>> data;
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(5000, 10, 100));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(50000, 10, 1000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
-    
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(5000, 2000, 1, 3000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50000, 15000, 1, 30000));
-  }
+  data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
+  data.push_back(Gen<digit, Distribution::Uniform>()(5000, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(50000, 10, 100));
+  data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(5000, 2000, 1, 3000));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(50000, 15000, 1, 30000));
   Compare<microsec>(master, data, "../data/digit_merge_rec.csv");
 }
 
-void GenFastRDigitData(){
+void GenFastRDigitData() {
   MasterSorter master = FastSorterRecurs();
   std::vector<std::vector<digit>> data;
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(5000, 10, 100));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(50000, 10, 1000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
-    
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(5000, 2000, 1, 3000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50000, 15000, 1, 30000));
-  }
+  data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
+  data.push_back(Gen<digit, Distribution::Uniform>()(5000, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(50000, 10, 1000));
+  data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(5000, 2000, 1, 3000));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(50000, 15000, 1, 30000));
   Compare<microsec>(master, data, "../data/digit_fast_rec.csv");
 }
 
-void GenFastRInt(){
+void GenFastRInt() {
   MasterSorter master = FastSorterRecurs();
   std::vector<std::vector<int>> data;
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<int, Distribution::Normal>()(5000, 100, 1000));
-  }
-
-  Compare<microsec>(master, data, "../data/int_fastR_rec.csv");
-  data.clear();
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<int, Distribution::Normal>()(50000, 100, 1000));
-  }
-
-  Compare<microsec>(master, data, "../data/int_fastR_rec.csv");
-  data.clear();
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<int, Distribution::Normal>()(500000, 100, 1000));
-  }
+  data.push_back(Gen<int, Distribution::Normal>()(5000, 100, 1000));
+  data.push_back(Gen<int, Distribution::Normal>()(50000, 100, 1000));
+  data.push_back(Gen<int, Distribution::Normal>()(500000, 100, 1000));
   Compare<microsec>(master, data, "../data/int_fastR_rec.csv");
 }
 
-void GenFastDigitData(){
+void GenFastDigitData() {
   MasterSorter master = FastSorter();
   std::vector<std::vector<digit>> data;
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(5000, 10, 100));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::Uniform>()(50000, 10, 1000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
-    
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(5000, 2000, 1, 3000));
-  }
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50000, 15000, 1, 30000));
-  }
+  data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
+  data.push_back(Gen<digit, Distribution::Uniform>()(5000, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(50000, 10, 1000));
+  data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(5000, 2000, 1, 3000));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(50000, 15000, 1, 30000));
   Compare<microsec>(master, data, "../data/digit_fast.csv");
 }
 
-void GenRadixDate(){
+void GenStandartDigitData(){
+  MasterSorter master = StandartSorter();
+  std::vector<std::vector<digit>> data;
+  data.push_back(Gen<digit, Distribution::Uniform>()(50, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(500, 10, 1000));
+  data.push_back(Gen<digit, Distribution::Uniform>()(5000, 10, 100));
+  data.push_back(Gen<digit, Distribution::Uniform>()(50000, 10, 1000));
+  data.push_back(Gen<digit, Distribution::PartiallyOrdered>()(50, 20, 1, 30));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(500, 150, 1, 300));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(5000, 2000, 1, 3000));
+  data.push_back(
+      Gen<digit, Distribution::PartiallyOrdered>()(50000, 15000, 1, 30000));
+  Compare<microsec>(master, data, "../data/digit_standart.csv");
+}
+void GenRadixDate() {
   std::vector<std::vector<Date>> data;
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<Date, Distribution::PartiallyOrdered>()(500000, 30, 100, 30,3, 10));
-  }
+  data.push_back(
+      Gen<Date, Distribution::PartiallyOrdered>()(500000, 30, 100, 30, 3, 10));
   CompareRadixData<microsec>(data, "../data/radix_date.csv");
 }
 
-void GenHybryd(){
+void GenRadixInt() {
   std::vector<std::vector<int>> data;
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<int, Distribution::Normal>()(500000, 100, 1000));
-  }
-  auto sorter = HybrydSorter{};
-  CompareHybryd<microsec>(sorter, data, "../data/int_hybryd.csv");
-  std::vector<std::vector<std::string>> str_data;
-  for(int i = 0; i < 10; i++){
-    str_data.push_back(Gen<std::string, Distribution::PartiallyOrdered>()(50000, 10, 1000, 10, 20010));
-  }
-  CompareHybryd<microsec>(sorter, str_data, "../data/str_hybryd.csv");
+  data.push_back(Gen<int, Distribution::Normal>()(5000, 100, 1000));
+  data.push_back(Gen<int, Distribution::Normal>()(50000, 100, 1000));
+  data.push_back(Gen<int, Distribution::Normal>()(500000, 100, 1000));
+  CompareRadixInt<microsec>(data, "../data/radix_int.csv");
 }
 
-void GenAnotherRadixInt(){
+void GenRadixAnother(){
   std::vector<std::vector<int>> data;
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<int, Distribution::Normal>()(500000, 100, 1000));
-  }
-  std::vector<std::vector<unsigned int>> custed_int(10);
-  for(int i = 0; i < 10; i++){
+  data.push_back(Gen<int, Distribution::Normal>()(5000, 100, 1000));
+  data.push_back(Gen<int, Distribution::Normal>()(50000, 100, 1000));
+  data.push_back(Gen<int, Distribution::Normal>()(500000, 100, 1000));
+  std::vector<std::vector<unsigned int>> input(3);
+  for(int i = 0; i < data.size(); i++){
     for(int j = 0; j < data[i].size(); j++){
-      custed_int[i].push_back(*reinterpret_cast<unsigned int*>(&data[i][j]));
+      input[i].push_back( *reinterpret_cast<unsigned int*>(&data[i][j]));
     }
   }
-  CompareAnotherRadixUInt<microsec>(custed_int, std::string("../data/another.csv"));
+  CompareAnotherRadixInt<microsec>(input, "../data/another_radix.csv");
 }
-
-void GenRadixInt(){
+void GenHybryd(){
   std::vector<std::vector<int>> data;
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<int, Distribution::Normal>()(5000, 100, 1000));
-  }
-
-  CompareRadixInt<microsec>(data, "../data/radix_int.csv");
-  data.clear();
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<int, Distribution::Normal>()(50000, 100, 1000));
-  }
-
-  CompareRadixInt<microsec>(data, "../data/radix_int.csv");
-  data.clear();
-  for(int i = 0; i < 10; i++){
-    data.push_back(Gen<int, Distribution::Normal>()(500000, 100, 1000));
-  }
-
-  CompareRadixInt<microsec>(data, "../data/radix_int.csv");
+  data.push_back(Gen<int, Distribution::Normal>()(5000, 100, 1000));
+  data.push_back(Gen<int, Distribution::Normal>()(50000, 100, 1000));
+  data.push_back(Gen<int, Distribution::Normal>()(500000, 100, 1000));
+  HybrydSorter sorter;
+  CompareHybryd<microsec>(sorter, data, "./data/hybryd_int.csv");
 }
 
 int main(int, char **) {
@@ -643,9 +502,13 @@ int main(int, char **) {
   GenHeapDigitData();
   CompareSmallString();
   CompareBigString();
+  GenBubbleDigitData();
+  GenInsertDigitData();
+  GenSelectDigitData();
   GenRadixInt();
   GenRadixDate();
   GenFastRInt();
-  GenAnotherRadixInt();
+  GenStandartDigitData();
+  GenRadixAnother();
   GenHybryd();
 }
